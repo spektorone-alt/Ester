@@ -237,14 +237,14 @@ function toast(msg){const t=document.createElement("div");t.className="toast";t.
 // ---------- data layer
 // כתובת ה-Web App של Google Apps Script. אפשר להדביק כאן, או להזין במסך הכניסה.
 const CFG_URL = "https://script.google.com/macros/s/AKfycbzXgcKjwdJn0TuhRRngHIvvfuFH023LvkrfziYaE3VZzYXeG-777E0FJOMXhLXiHJWc7g/exec";
-function cfg(){let u=CFG_URL.indexOf("PASTE")>=0?"":CFG_URL,t="";try{u=localStorage.getItem("es_url")||u;t=localStorage.getItem("es_token")||""}catch(e){}return {u,t}}
+function cfg(){let u=CFG_URL.indexOf("PASTE")>=0?"":CFG_URL,t="";try{u=u||localStorage.getItem("es_url")||"";t=localStorage.getItem("es_token")||""}catch(e){}return {u,t}}
 async function api(action,payload={}){
   const {u,t}=cfg();
   let r;
   try{r=await fetch(u,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,token:t,...payload})})}
   catch(e){const x=new Error("אין חיבור לאינטרנט");x.code="network";throw x}
   let j;try{j=await r.json()}catch(e){const x=new Error("השרת בגוגל לא החזיר תשובה תקינה");x.code="bad_response";throw x}
-  if(!j.ok){const x=new Error(j.error==="bad_token"?"קוד הגישה שגוי":(j.error||"שגיאה"));x.code=j.error;throw x}
+  if(!j.ok){const x=new Error(j.error==="bad_token"?"הסיסמה שגויה":(j.error||"שגיאה"));x.code=j.error;throw x}
   return j;
 }
 async function put(col,id,data){
@@ -277,7 +277,7 @@ async function init(){
   S.mode="loading";render();
   try{await load();S.mode="ready";render()}
   catch(e){
-    if(e.code==="bad_token"){try{localStorage.removeItem("es_token")}catch(x){}S.setupErr="קוד הגישה שגוי.";S.mode="setup"}
+    if(e.code==="bad_token"){try{localStorage.removeItem("es_token")}catch(x){}S.setupErr="הסיסמה שגויה.";S.mode="setup"}
     else if(e.code==="bad_response"){S.setupErr="הכתובת לא נכונה, או שהסקריפט לא פורסם עם גישה ל״כל אחד״.";S.mode="setup"}
     else S.mode="offline";
     render();
@@ -292,7 +292,7 @@ function render(){
   let body="";
   if(S.mode==="loading") body=`<div class="empty" style="margin-top:24px">טוען את התיקים מגוגל שיטס…</div>`;
   else if(S.mode==="setup") body=viewSetup();
-  else if(S.mode==="offline") body=`<div class="empty" style="margin-top:24px">לא הצלחתי להתחבר לגוגל שיטס. בדקו את החיבור לאינטרנט. <div class="row" style="justify-content:center;margin-top:10px"><button class="btn small" data-act="retry">נסו שוב</button><button class="btn small ghost" data-act="logout">החלפת קוד גישה</button></div></div>`;
+  else if(S.mode==="offline") body=`<div class="empty" style="margin-top:24px">לא הצלחתי להתחבר לגוגל שיטס. בדקו את החיבור לאינטרנט. <div class="row" style="justify-content:center;margin-top:10px"><button class="btn small" data-act="retry">נסו שוב</button><button class="btn small ghost" data-act="logout">החלפת סיסמה</button></div></div>`;
   else if(S.view==="today") body=viewToday();
   else if(S.view==="clients") body=viewClients();
   else if(S.view==="client") body=viewClient();
@@ -327,7 +327,7 @@ function viewSetup(){
     <h2 class="view" style="margin:0">כניסה</h2>
     <p class="sub" style="margin:0">התיקים נשמרים בגוגל שיטס. הכניסה נשמרת במכשיר הזה.</p>
     ${needUrl?`<div class="f"><label for="url">כתובת ה-Web App (מגוגל Apps Script)</label><input id="url" name="url" type="url" dir="ltr" value="${esc(u)}" placeholder="https://script.google.com/macros/s/…/exec"></div>`:""}
-    <div class="f"><label for="token">קוד גישה</label><input id="token" name="token" type="password" autocomplete="current-password"></div>
+    <div class="f"><label for="token">סיסמה</label><input id="token" name="token" type="password" autocomplete="current-password"></div>
     ${S.setupErr?`<div class="err" style="margin:0">${esc(S.setupErr)}</div>`:""}
     <div><button class="btn primary" type="submit">כניסה</button></div>
   </form>`;

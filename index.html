@@ -236,7 +236,7 @@ function toast(msg){const t=document.createElement("div");t.className="toast";t.
 
 // ---------- data layer
 // כתובת ה-Web App של Google Apps Script. אפשר להדביק כאן, או להזין במסך הכניסה.
-const CFG_URL = "PASTE_WEB_APP_URL_HERE";
+const CFG_URL = "https://script.google.com/macros/s/AKfycbzXgcKjwdJn0TuhRRngHIvvfuFH023LvkrfziYaE3VZzYXeG-777E0FJOMXhLXiHJWc7g/exec";
 function cfg(){let u=CFG_URL.indexOf("PASTE")>=0?"":CFG_URL,t="";try{u=localStorage.getItem("es_url")||u;t=localStorage.getItem("es_token")||""}catch(e){}return {u,t}}
 async function api(action,payload={}){
   const {u,t}=cfg();
